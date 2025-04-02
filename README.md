@@ -1,4 +1,4 @@
-# Metaverse-Social-Practice
+# SocialAIzation
 This repository is hosted as a part of FSI Hackathon for Autism (https://github.com/fsi-hack4autism)
 
 ## Description
