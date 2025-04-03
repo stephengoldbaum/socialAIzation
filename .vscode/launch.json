@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Backend Server",
+      "program": "${workspaceFolder}/App/backend/server.js", // Path to your backend entry file
+      "cwd": "${workspaceFolder}/App/backend", // Set the working directory to the backend folder
+      "envFile": "${workspaceFolder}/App/.env", // Load environment variables
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}
