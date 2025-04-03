@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data_container:/data/db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_CONNECTION_STRING=mongodb://admin:password@mongodb:27017
+      - MONGODB_DATABASE_NAME=metaverse-social
+      - MONGODB_USER_COLLECTION=users
+      - MONGODB_SCENARIO_COLLECTION=scenarios
+      - MONGODB_SESSION_COLLECTION=sessions
+      - MONGODB_INTERACTION_COLLECTION=interactions
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3000
+
+volumes:
+  mongodb_data_container:
