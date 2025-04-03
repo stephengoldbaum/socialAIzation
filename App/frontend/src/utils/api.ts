@@ -1,10 +1,9 @@
 import axios from 'axios';
 import type { Scenario, ScenarioInput, PaginatedResponse, ScenarioFilter, ScenarioSort } from '../types/scenario';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+import config from '../config';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.baseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

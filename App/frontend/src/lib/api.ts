@@ -1,11 +1,10 @@
 import axios from 'axios';
-
-// Get API URL from environment variables
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import config from '../config';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.baseUrl,
   headers: {
     'Content-Type': 'application/json'
   },
@@ -13,18 +12,18 @@ const api = axios.create({
 });
 
 // Request interceptor for adding auth tokens
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use((reqConfig: AxiosRequestConfig) => {
+  const token = localStorage.getItem(config.auth.tokenStorageKey);
+  if (token && reqConfig.headers) {
+    reqConfig.headers.Authorization = `Bearer ${token}`;
   }
-  return config;
+  return reqConfig;
 });
 
 // Response interceptor for handling errors
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response: AxiosResponse) => response,
+  (error: any) => {
     // Handle specific error codes
     if (error.response?.status === 401) {
       // Handle unauthorized (could redirect to login)
