@@ -1,20 +1,35 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18
+FROM node:18-alpine AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm ci
 
-# Install application dependencies
-RUN npm install
-
-# Copy the rest of the application code
+# Copy source code
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Build the application
+RUN npm run build
 
-# Define the command to run the app
-CMD ["npm", "run", "dev"]
+# Remove development dependencies
+RUN npm prune --production
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Expose the application port
+EXPOSE 3001
+
+# Start the application
+CMD ["node", "dist/main"]
