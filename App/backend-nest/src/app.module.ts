@@ -7,6 +7,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { ScenariosModule } from './scenarios/scenarios.module';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     // Feature modules
     UsersModule,
     AuthModule,
-    // ScenariosModule, // Will be added later
+    ScenariosModule,
   ],
   controllers: [],
   providers: [
