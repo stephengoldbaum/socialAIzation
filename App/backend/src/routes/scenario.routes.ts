@@ -12,7 +12,7 @@ import {
 } from '../middleware/error.middleware';
 import { NotFoundError } from '../utils/errors';
 import { createAuthMiddleware } from '../middleware/auth.middleware';
-import container from '../di/container';
+import { Container } from 'inversify';
 
 // Define validation schemas
 const createScenarioSchema = z.object({
@@ -45,8 +45,8 @@ const scenarioParamsSchema = z.object({
   id: z.string()
 });
 
-// Create router factory function to avoid accessing container at module level
-export function createScenarioRoutes() {
+// Create router factory function that accepts a container
+export function createScenarioRoutes(container: Container) {
   // Create router
   const router = Router();
   
@@ -328,5 +328,5 @@ export function createScenarioRoutes() {
   return router;
 }
 
-// Export the router
-export const scenarioRoutes = createScenarioRoutes();
+// Do NOT export an instance here - this will be created when the app starts
+// export const scenarioRoutes = createScenarioRoutes();

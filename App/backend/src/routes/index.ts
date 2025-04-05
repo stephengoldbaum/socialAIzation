@@ -1,7 +1,8 @@
 import express from 'express';
-import { scenarioRoutes } from './scenario.routes';
+import { createScenarioRoutes } from './scenario.routes';
 import { ILoggerService } from '../services/logger.service';
 import { authRoutes } from './auth.routes';
+import container from '../di/container';
 
 /**
  * Register all application routes
@@ -9,8 +10,11 @@ import { authRoutes } from './auth.routes';
  * @param logger Logger service
  */
 export function registerRoutes(app: express.Application, logger: ILoggerService): void {
+  // Create routes using the container
+  const scenarioRouter = createScenarioRoutes(container);
+  
   // API routes
-  app.use('/api', scenarioRoutes);
+  app.use('/api/scenarios', scenarioRouter);
   app.use('/api/auth', authRoutes());
   
   // Health check route
