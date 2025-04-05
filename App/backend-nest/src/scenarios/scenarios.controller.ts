@@ -32,13 +32,13 @@ interface RequestWithUser extends Request {
 
 @ApiTags('scenarios')
 @Controller('scenarios')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class ScenariosController {
   constructor(private readonly scenariosService: ScenariosService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRole.SCENARIO_OWNER, UserRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new scenario' })
   @ApiResponse({ 
     status: HttpStatus.CREATED, 
@@ -70,18 +70,15 @@ export class ScenariosController {
     status: HttpStatus.OK, 
     description: 'Scenarios successfully retrieved',
   })
-  @ApiResponse({ 
-    status: HttpStatus.UNAUTHORIZED, 
-    description: 'Unauthorized'
-  })
   async findAll(
     @Query() queryParams: ListScenariosQueryDto,
-    @Req() req: RequestWithUser,
   ): Promise<PaginatedResponse<Scenario>> {
     return this.scenariosService.findAll(queryParams);
   }
 
   @Get('my-scenarios')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'List scenarios created by the current user' })
   @ApiResponse({ 
     status: HttpStatus.OK, 
@@ -109,16 +106,14 @@ export class ScenariosController {
     status: HttpStatus.NOT_FOUND, 
     description: 'Scenario not found'
   })
-  @ApiResponse({ 
-    status: HttpStatus.UNAUTHORIZED, 
-    description: 'Unauthorized'
-  })
   async findOne(@Param('id') id: string): Promise<Scenario> {
     return this.scenariosService.findById(id);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRole.SCENARIO_OWNER, UserRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a scenario' })
   @ApiResponse({ 
     status: HttpStatus.OK, 
@@ -146,7 +141,9 @@ export class ScenariosController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRole.SCENARIO_OWNER, UserRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a scenario' })
   @ApiResponse({ 
     status: HttpStatus.NO_CONTENT, 
@@ -172,6 +169,8 @@ export class ScenariosController {
   }
 
   @Post(':id/start')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Start a scenario session' })
   @ApiResponse({ 
     status: HttpStatus.OK, 
@@ -213,6 +212,8 @@ export class ScenariosController {
   }
 
   @Post(':id/interaction')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Record a user interaction in a scenario' })
   @ApiResponse({ 
     status: HttpStatus.OK, 
