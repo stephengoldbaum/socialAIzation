@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import ScenarioCard from '../components/ScenarioCard';
 import { scenarioApi } from '../utils/api';
 import type { Scenario } from '../types/scenario';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ScenariosPage() {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use auth context to check user roles
+  const { hasRole } = useAuth();
 
   useEffect(() => {
     const fetchScenarios = async () => {
@@ -101,12 +105,14 @@ export default function ScenariosPage() {
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
-          <Link
-            to="/scenarios/new"
-            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Create New Scenario
-          </Link>
+          {hasRole('scenario_owner') && (
+            <Link
+              to="/scenarios/new"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Create New Scenario
+            </Link>
+          )}
         </div>
       </div>
 
@@ -138,12 +144,14 @@ export default function ScenariosPage() {
             <h3 className="mt-2 text-sm font-medium text-gray-900">No scenarios</h3>
             <p className="mt-1 text-sm text-gray-500">Get started by creating a new scenario.</p>
             <div className="mt-6">
-              <Link
-                to="/scenarios/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Create New Scenario
-              </Link>
+              {hasRole('scenario_owner') && (
+                <Link
+                  to="/scenarios/new"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Create New Scenario
+                </Link>
+              )}
             </div>
           </div>
         )}

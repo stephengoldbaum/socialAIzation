@@ -6,10 +6,11 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { AppError, ValidationError, normalizeError } from '../utils/errors';
+import { AppError, ErrorResponse, ValidationError, normalizeError } from '../utils/errors';
 import { ILoggerService } from '../services/logger.service';
 import container from '../di/container';
 import TYPES from '../di/types';
+import { z } from 'zod';
 
 /**
  * Global error handler middleware
@@ -17,71 +18,74 @@ import TYPES from '../di/types';
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   const logger = container.get<ILoggerService>(TYPES.LoggerService);
   
-  // Normalize the error to an AppError
-  const appError = normalizeError(err);
-  
-  // Log the error
+  // Default to internal server error
+  const appError = err instanceof AppError
+    ? err
+    : new AppError('Internal server error', 500, 'INTERNAL_ERROR');
+
+  // Log error based on severity
   if (appError.statusCode >= 500) {
     logger.error(`[${req.method}] ${req.path} - ${appError.message}`, {
-      error: appError,
-      stack: appError.stack,
-      body: (req as any).validatedBody || req.body,
-      params: (req as any).validatedParams || req.params,
-      query: (req as any).validatedQuery || req.query
+      error: err,
+      stack: err.stack,
+      statusCode: appError.statusCode,
+      params: req.validatedParams || req.params,
+      query: req.validatedQuery || req.query
     });
   } else {
     logger.warn(`[${req.method}] ${req.path} - ${appError.message}`, {
       statusCode: appError.statusCode,
-      body: (req as any).validatedBody || req.body,
-      params: (req as any).validatedParams || req.params,
-      query: (req as any).validatedQuery || req.query
+      error: err.message,
+      params: req.validatedParams || req.params,
+      query: req.validatedQuery || req.query
     });
   }
-  
-  // Prepare the response
-  const response: any = {
-    status: 'error',
-    message: appError.message
+
+  // Prepare response
+  const response: ErrorResponse = {
+    error: {
+      message: appError.message,
+      code: appError.code || 'UNKNOWN_ERROR',
+      statusCode: appError.statusCode
+    }
   };
-  
+
   // Add validation errors if available
-  if (appError instanceof ValidationError && appError.errors.length > 0) {
-    response.errors = appError.errors;
+  if (appError.validationErrors) {
+    response.error.validationErrors = appError.validationErrors;
   }
-  
-  // Add stack trace in development mode
-  if (process.env.NODE_ENV !== 'production' && appError.stack) {
-    response.stack = appError.stack;
-  }
-  
-  // Send the response
+
+  // Send response
   res.status(appError.statusCode).json(response);
 }
 
 /**
- * Async handler to catch errors in async route handlers
+ * Wraps async route handlers to catch errors
+ * @param fn Async route handler
  */
 export function asyncErrorHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) {
   return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+    Promise.resolve(fn(req, res, next)).catch((err) => next(err));
   };
 }
 
 /**
- * Validation middleware for request body using Zod schema
- * Compatible with Express 5 where req properties are read-only
+ * Validates request body against a Zod schema
+ * @param schema Zod schema
  */
-export function validateBody(schema: any) {
+export function validateBody<T>(schema: z.ZodType<T>) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Parse and validate the body but don't modify req.body directly
+      // Parse and validate request body
       const validatedBody = schema.parse(req.body);
-      // Attach the validated data to the request object as a custom property
-      (req as any).validatedBody = validatedBody;
+      
+      // Attach validated body to request
+      req.validatedBody = validatedBody;
+      
       next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        next(new ValidationError('Validation error', error.errors));
+      if (error instanceof z.ZodError) {
+        next(new AppError('Validation error', 400, 'VALIDATION_ERROR', error.errors));
       } else {
         next(error);
       }
@@ -90,20 +94,22 @@ export function validateBody(schema: any) {
 }
 
 /**
- * Validation middleware for request query parameters using Zod schema
- * Compatible with Express 5 where req properties are read-only
+ * Validates request query against a Zod schema
+ * @param schema Zod schema
  */
-export function validateQuery(schema: any) {
+export function validateQuery<T>(schema: z.ZodType<T>) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Parse and validate the query but don't modify req.query directly
+      // Parse and validate request query
       const validatedQuery = schema.parse(req.query);
-      // Attach the validated data to the request object as a custom property
-      (req as any).validatedQuery = validatedQuery;
+      
+      // Attach validated query to request
+      req.validatedQuery = validatedQuery;
+      
       next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        next(new ValidationError('Invalid query parameters', error.errors));
+      if (error instanceof z.ZodError) {
+        next(new AppError('Validation error', 400, 'VALIDATION_ERROR', error.errors));
       } else {
         next(error);
       }
@@ -112,20 +118,22 @@ export function validateQuery(schema: any) {
 }
 
 /**
- * Validation middleware for request parameters using Zod schema
- * Compatible with Express 5 where req properties are read-only
+ * Validates request params against a Zod schema
+ * @param schema Zod schema
  */
-export function validateParams(schema: any) {
+export function validateParams<T>(schema: z.ZodType<T>) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Parse and validate the params but don't modify req.params directly
+      // Parse and validate request params
       const validatedParams = schema.parse(req.params);
-      // Attach the validated data to the request object as a custom property
-      (req as any).validatedParams = validatedParams;
+      
+      // Attach validated params to request
+      req.validatedParams = validatedParams;
+      
       next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        next(new ValidationError('Invalid path parameters', error.errors));
+      if (error instanceof z.ZodError) {
+        next(new AppError('Validation error', 400, 'VALIDATION_ERROR', error.errors));
       } else {
         next(error);
       }
@@ -134,9 +142,9 @@ export function validateParams(schema: any) {
 }
 
 /**
- * Not found handler middleware
+ * 404 Not Found middleware
  */
 export function notFoundHandler(req: Request, res: Response, next: NextFunction) {
-  const error = new AppError(`Not found - ${req.originalUrl}`, 404);
+  const error = new AppError(`Not found - ${req.originalUrl}`, 404, 'NOT_FOUND');
   next(error);
 }

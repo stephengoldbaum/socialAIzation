@@ -1,19 +1,21 @@
-import { Express } from 'express';
+import express from 'express';
 import { scenarioRoutes } from './scenario.routes';
 import { ILoggerService } from '../services/logger.service';
+import { authRoutes } from './auth.routes';
 
 /**
  * Register all application routes
  * @param app Express application instance
  * @param logger Logger service
  */
-export function registerRoutes(app: Express, logger: ILoggerService): void {
+export function registerRoutes(app: express.Application, logger: ILoggerService): void {
   // API routes
   app.use('/api', scenarioRoutes);
+  app.use('/api/auth', authRoutes());
   
   // Health check route
-  app.get('/api/health', (req, res) => {
-    res.status(200).json({ 
+  app.get('/api/health', (req: express.Request, res: express.Response) => {
+    (res as any).status(200).json({ 
       status: 'ok',
       version: process.env.npm_package_version || '1.0.0',
       timestamp: new Date().toISOString()

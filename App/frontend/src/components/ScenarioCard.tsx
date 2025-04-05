@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom';
 import type { Scenario } from '../types/scenario';
+import { useAuth } from '../contexts/AuthContext';
+
+// Define user roles as a type
+export type UserRole = 'scenario_owner' | 'player';
 
 interface ScenarioCardProps {
   scenario: Scenario;
@@ -7,6 +11,9 @@ interface ScenarioCardProps {
 }
 
 export default function ScenarioCard({ scenario, onDelete }: ScenarioCardProps) {
+  // Use the auth context to check user roles
+  const { hasRole } = useAuth();
+  
   const getMediaTypeIcon = (type: 'VR' | 'web' | 'mobile') => {
     switch (type) {
       case 'VR':
@@ -54,18 +61,38 @@ export default function ScenarioCard({ scenario, onDelete }: ScenarioCardProps) 
             </div>
           </div>
           <div className="flex space-x-2">
-            <Link 
-              to={`/scenarios/${scenario.id}/edit`}
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Edit
-            </Link>
-            <button
-              onClick={() => onDelete(scenario.id)}
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Delete
-            </button>
+            {hasRole('scenario_owner') && (
+              <>
+                <Link 
+                  to={`/scenarios/${scenario.id}/edit`}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => onDelete(scenario.id)}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Delete
+                </button>
+              </>
+            )}
+            {hasRole('player') && (
+              <>
+                <Link 
+                  to={`/scenarios/${scenario.id}/run`}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Run
+                </Link>
+                <Link 
+                  to={`/scenarios/${scenario.id}/history`}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  History
+                </Link>
+              </>
+            )}
           </div>
         </div>
         <div className="mt-4">

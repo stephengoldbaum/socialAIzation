@@ -48,6 +48,7 @@ const config = {
   
   auth: {
     jwtSecret: getRequiredEnv('JWT_SECRET'),
+    refreshTokenSecret: getRequiredEnv('REFRESH_TOKEN_SECRET'),
     tokenExpiry: getRequiredEnv('JWT_EXPIRY'),
     azureAd: {
       clientId: getRequiredEnv('AZURE_AD_CLIENT_ID'),
