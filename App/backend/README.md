@@ -1,56 +1,105 @@
-# Metaverse Social Practice - Backend API
+# Metaverse Social Practice Backend
 
-## Setup and Installation
+This is the NestJS backend for the Metaverse Social Practice application. It provides a robust API for managing scenarios, users, and authentication.
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Set up environment variables:
-   ```bash
-   cp ../.env.example .env.local
-   # Edit .env.local with your configuration
-   ```
+- **Authentication**: JWT-based authentication with refresh tokens
+- **Role-Based Access Control**: Different roles for users, scenario owners, and admins
+- **Scenario Management**: Create, read, update, and delete scenarios
+- **Session Tracking**: Start sessions and record interactions
+- **Strict Configuration**: Fail-fast approach with no default fallbacks
 
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
+## Prerequisites
 
-## Dependencies
+- Node.js 18 or higher
+- MongoDB 6.0 or higher
+- npm or yarn
 
-This project uses several key dependencies:
+## Environment Variables
 
-- **Express**: Web server framework
-- **MongoDB**: Database driver for MongoDB-compatible databases
-- **Node-Vault**: Client for HashiCorp Vault
-- **Azure SDK**: For Azure Key Vault integration
+This application uses a strict fail-fast configuration approach. All environment variables must be explicitly set in all environments with no default fallbacks.
 
-## Environment Setup
+Copy the `.env.example` file to `.env` and fill in all required values:
 
-For local development with MongoDB:
-1. Install MongoDB locally or use MongoDB Atlas
-2. Update the MongoDB connection string in your .env file
-
-## Secret Management
-
-The application supports multiple secret management options:
-
-1. Environment Variables (default)
-2. HashiCorp Vault
-3. Azure Key Vault
-
-To use HashiCorp Vault:
-```
-SECRETS_PROVIDER=vault
-VAULT_ADDR=http://localhost:8200
-VAULT_TOKEN=your-token
-VAULT_SECRETS_PATH=secret/metaverse-social
+```bash
+cp .env.example .env
 ```
 
-To use Azure Key Vault:
+Required environment variables:
+
 ```
-SECRETS_PROVIDER=azure
-KEY_VAULT_NAME=your-vault-name
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017/metaverse-social
+
+# JWT Authentication
+JWT_SECRET=your_jwt_secret_here
+JWT_REFRESH_SECRET=your_refresh_token_secret_here
+JWT_EXPIRY=1h
+JWT_REFRESH_EXPIRY=7d
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5173
+
+# Logging
+LOG_LEVEL=info
 ```
+
+## Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run start:dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start:prod
+```
+
+## Docker Deployment
+
+This application can be deployed using Docker. A Dockerfile is provided in the root directory.
+
+```bash
+# Build the Docker image
+docker build -t metaverse-social-backend .
+
+# Run the Docker container
+docker run -p 3001:3001 --env-file .env metaverse-social-backend
+```
+
+For Docker Compose deployment, see the `docker-compose.yml` file in the project root.
+
+## API Documentation
+
+When running in development mode, Swagger documentation is available at:
+
+```
+http://localhost:3001/api/docs
+```
+
+## Testing
+
+```bash
+# Run unit tests
+npm run test
+
+# Run e2e tests
+npm run test:e2e
+
+# Run test coverage
+npm run test:cov
+```
+
+## License
+
+This project is proprietary and confidential.
