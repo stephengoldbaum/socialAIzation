@@ -153,12 +153,12 @@ Before you can use remote state storage, you need to create the Azure Storage Ac
 
 2. Create a resource group for your state storage:
    ```bash
-   az group create --name dev-metaverse-social-rg --location eastus
+   az group create --name dev-social-eye-rg --location eastus
    ```
 
 3. Create a storage account (name must be globally unique):
    ```bash
-   az storage account create --name devmetaversestorage --resource-group dev-metaverse-social-rg --sku Standard_LRS
+   az storage account create --name devmetaversestorage --resource-group dev-social-eye-rg --sku Standard_LRS
    ```
 
 4. Create a container for the state files:
@@ -168,7 +168,7 @@ Before you can use remote state storage, you need to create the Azure Storage Ac
 
 5. Get the storage account key (you'll need this for authentication):
    ```bash
-   az storage account keys list --resource-group dev-metaverse-social-rg --account-name devmetaversestorage
+   az storage account keys list --resource-group dev-social-eye-rg --account-name devmetaversestorage
    ```
 
 6. Set environment variables for authentication:
@@ -186,7 +186,7 @@ To initialize OpenTofu/Terraform with environment-specific backend settings:
 
    ```
    # backend-dev.conf example
-   resource_group_name  = "dev-metaverse-social-rg"
+   resource_group_name  = "dev-social-eye-rg"
    storage_account_name = "devmetaversestorage"
    container_name       = "tfstate"
    ```

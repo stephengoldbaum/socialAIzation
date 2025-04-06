@@ -1,57 +1,58 @@
-services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data_container:/data/db
+version: '3.8'
 
-  scenario-backend:
+services:
+  backend:
     build:
       context: ./App/backend
-    container_name: scenario-be
+      dockerfile: Dockerfile
+    container_name: social-eye-backend
+    restart: unless-stopped
     ports:
-      - "5001:3000"
+      - "${BACKEND_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_EXPIRY=${JWT_EXPIRY:-1h}
+      - JWT_REFRESH_EXPIRY=${JWT_REFRESH_EXPIRY:-7d}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
     depends_on:
       - mongodb
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - CORS_ORIGIN=*
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRY=1h
-      - SECRETS_PROVIDER=ignore
-      - KEY_VAULT_NAME=ignore
-      - MONGODB_CONNECTION_STRING=mongodb://mongodb:27017
-      - MONGODB_DATABASE_NAME=metaverse-social
-      - MONGODB_USER_COLLECTION=users
-      - MONGODB_SCENARIO_COLLECTION=scenarios
-      - MONGODB_SESSION_COLLECTION=sessions
-      - MONGODB_INTERACTION_COLLECTION=interactions
+    networks:
+      - app-network
 
-  scenario-frontend:
+  frontend:
     build:
       context: ./App/frontend
-    container_name: scenario-fe
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: social-eye-frontend
+    restart: unless-stopped
     ports:
-      - "5000:3000"
+      - "${FRONTEND_PORT:-5173}:80"
     depends_on:
-      - scenario-backend
-    environment:
-      - VITE_API_URL=http://localhost:5001/api
+      - backend
+    networks:
+      - app-network
 
-  conversation-api:
-    build:
-      context: ./ConversationAPI/backend
-    container_name: conversation-api
+  mongodb:
+    image: mongo:6
+    container_name: social-eye-mongodb
+    restart: unless-stopped
     ports:
-      - "5002:80"
-    environment:
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
-      - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
-      - API_VERSION=${API_VERSION}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  mongodb_data_container:
+  mongodb-data:

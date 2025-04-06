@@ -10,7 +10,7 @@ fi
 
 ENV=$1
 LOCATION="eastus"
-RESOURCE_GROUP="${ENV}-metaverse-social-rg"
+RESOURCE_GROUP="${ENV}-social-eye-rg"
 STORAGE_ACCOUNT="${ENV}metaversestorage"
 CONTAINER_NAME="tfstate"
 

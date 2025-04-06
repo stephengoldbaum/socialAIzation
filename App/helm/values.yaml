@@ -11,7 +11,7 @@ backend:
   name: scenario-management
   replicaCount: 2
   image:
-    repository: metaverse-social-backend
+    repository: social-eye-backend
     tag: latest  # Will be overridden in CI/CD
     pullPolicy: IfNotPresent
   service:
@@ -36,14 +36,14 @@ backend:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: api.metaverse-social.example.com
+      - host: api.social-eye.example.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: backend-tls
         hosts:
-          - api.metaverse-social.example.com
+          - api.social-eye.example.com
   # Environment-specific configuration
   env:
     ASPNETCORE_ENVIRONMENT: "Production"
@@ -53,7 +53,7 @@ frontend:
   name: frontend
   replicaCount: 2
   image:
-    repository: metaverse-social-frontend
+    repository: social-eye-frontend
     tag: latest  # Will be overridden in CI/CD
     pullPolicy: IfNotPresent
   service:
@@ -78,14 +78,14 @@ frontend:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: metaverse-social.example.com
+      - host: social-eye.example.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: frontend-tls
         hosts:
-          - metaverse-social.example.com
+          - social-eye.example.com
   # Environment variables for frontend
   env:
     REACT_APP_ENVIRONMENT: "production"

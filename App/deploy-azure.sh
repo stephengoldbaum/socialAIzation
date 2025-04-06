@@ -145,7 +145,7 @@ popd > /dev/null
 
 # Fallback to default values if extraction failed
 if [ -z "$RESOURCE_GROUP" ]; then
-    RESOURCE_GROUP="metaverse-social-rg"
+    RESOURCE_GROUP="social-eye-rg"
     echo "⚠️ Could not extract resource group from OpenTofu, using default: $RESOURCE_GROUP"
 fi
 
@@ -155,7 +155,7 @@ if [ -z "$LOCATION" ]; then
 fi
 
 if [ -z "$BACKEND_APP_NAME" ]; then
-    BACKEND_APP_NAME="metaverse-social-backend-prod"
+    BACKEND_APP_NAME="social-eye-backend-prod"
     echo "⚠️ Could not extract backend app name from OpenTofu, using default: $BACKEND_APP_NAME"
 fi
 
@@ -215,7 +215,7 @@ echo "Pruning development dependencies..."
 npm prune --production
 
 # Check if the package was created successfully
-if [ -f "deploy/metaverse-social-backend.zip" ]; then
+if [ -f "deploy/social-eye-backend.zip" ]; then
     echo "✅ Backend application built and packaged successfully"
 else
     echo "❌ Failed to create deployment package"
@@ -228,7 +228,7 @@ echo "✅ Backend application built and packaged"
 # Deploy backend to Azure
 write_step "Deploying backend to Azure App Service..."
 echo "Deploying ZIP package to Azure App Service..."
-az webapp deployment source config-zip -g $RESOURCE_GROUP -n $BACKEND_APP_NAME --src App/backend/deploy/metaverse-social-backend.zip
+az webapp deployment source config-zip -g $RESOURCE_GROUP -n $BACKEND_APP_NAME --src App/backend/deploy/social-eye-backend.zip
 
 echo "✅ Backend deployed to Azure"
 

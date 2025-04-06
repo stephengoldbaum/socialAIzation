@@ -20,7 +20,7 @@ provider "azurerm" {
 locals {
   location        = "Central US"  # Azure region to deploy resources
   environment_name = "prod"    # Environment name (prod, dev, test)
-  app_name        = "metaverse-social"  # Base name for all resources
+  app_name        = "social-eye"  # Base name for all resources
 }
 
 # App Service Plan - Defines the compute resources for the backend API

@@ -15,18 +15,18 @@ First, make sure you have added any required Docker images to your registry:
 
 ```bash
 # Build and push backend image
-docker build -t <your-registry>/metaverse-social-backend:latest -f App/backend/Dockerfile .
-docker push <your-registry>/metaverse-social-backend:latest
+docker build -t <your-registry>/social-eye-backend:latest -f App/backend/Dockerfile .
+docker push <your-registry>/social-eye-backend:latest
 
 # Build and push frontend image
-docker build -t <your-registry>/metaverse-social-frontend:latest -f App/frontend/Dockerfile .
-docker push <your-registry>/metaverse-social-frontend:latest
+docker build -t <your-registry>/social-eye-frontend:latest -f App/frontend/Dockerfile .
+docker push <your-registry>/social-eye-frontend:latest
 ```
 
 Create a `values.yaml` file with your specific configuration or use the provided one:
 
 ```bash
-helm install metaverse-social ./helm \
+helm install social-eye ./helm \
   --set global.imageRegistry=<your-registry> \
   --set backend.image.tag=<tag> \
   --set frontend.image.tag=<tag>
@@ -44,7 +44,7 @@ See `values.yaml` for configurable parameters. Key parameters include:
 ## Upgrading the Chart
 
 ```bash
-helm upgrade metaverse-social ./helm \
+helm upgrade social-eye ./helm \
   --set backend.image.tag=<new-tag> \
   --set frontend.image.tag=<new-tag>
 ```
@@ -52,7 +52,7 @@ helm upgrade metaverse-social ./helm \
 ## Uninstalling the Chart
 
 ```bash
-helm uninstall metaverse-social
+helm uninstall social-eye
 ```
 
 ## Notes for Production

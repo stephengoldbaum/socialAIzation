@@ -34,7 +34,7 @@ PORT=3001
 NODE_ENV=development
 
 # MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/metaverse-social
+MONGODB_URI=mongodb://localhost:27017/social-eye
 
 # JWT Authentication
 JWT_SECRET=your_jwt_secret_here
@@ -71,10 +71,10 @@ This application can be deployed using Docker. A Dockerfile is provided in the r
 
 ```bash
 # Build the Docker image
-docker build -t metaverse-social-backend .
+docker build -t social-eye-backend .
 
 # Run the Docker container
-docker run -p 3001:3001 --env-file .env metaverse-social-backend
+docker run -p 3001:3001 --env-file .env social-eye-backend
 ```
 
 For Docker Compose deployment, see the `docker-compose.yml` file in the project root.

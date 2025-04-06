@@ -8,7 +8,7 @@
 set -e
 
 # Configuration
-RESOURCE_GROUP="metaverse-social-rg"
+RESOURCE_GROUP="social-eye-rg"
 LOCATION="Central US"
 
 # Output formatting

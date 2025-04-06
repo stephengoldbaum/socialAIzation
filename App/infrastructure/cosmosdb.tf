@@ -36,7 +36,7 @@ resource "azurerm_cosmosdb_account" "db" {
 }
 
 resource "azurerm_cosmosdb_mongo_database" "db" {
-  name                = "metaverse-social-${var.environment}"
+  name                = "social-eye-${var.environment}"
   resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
   account_name        = azurerm_cosmosdb_account.db.name
 }
