@@ -3,7 +3,7 @@
 To run locally:
 
 ```
-cd socialAIzation
+cd socialeye
 cp env.example .env
 docker compose build
 docker compose up

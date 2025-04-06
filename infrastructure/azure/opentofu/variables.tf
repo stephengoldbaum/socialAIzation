@@ -19,7 +19,7 @@ variable "location" {
 variable "app_name" {
   description = "App name"
   type        = string
-  default     = "socialaization"
+  default     = "socialeye"
 }
 
 # Optional: Environment name for resource naming and configuration

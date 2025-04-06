@@ -20,7 +20,7 @@ provider "azurerm" {
   }
 }
 
-resource "azurerm_resource_group" "devsocialaization" {
+resource "azurerm_resource_group" "devsocialeye" {
   name     = var.resource_group_name
   location = "East US"
 }
@@ -32,7 +32,7 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"
   retention_in_days   = 30
-  depends_on          = [ azurerm_resource_group.devsocialaization ]
+  depends_on          = [ azurerm_resource_group.devsocialeye ]
 }
 
 resource "azurerm_container_app_environment" "container_env" {
@@ -40,7 +40,7 @@ resource "azurerm_container_app_environment" "container_env" {
   location                   = var.location
   resource_group_name        = var.resource_group_name  # Comes from variables.tf
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics.id
-  depends_on                 = [ azurerm_resource_group.devsocialaization, azurerm_log_analytics_workspace.log_analytics ]
+  depends_on                 = [ azurerm_resource_group.devsocialeye, azurerm_log_analytics_workspace.log_analytics ]
 }
 
 
@@ -73,7 +73,7 @@ resource "azurerm_cosmosdb_account" "mongodb" {
   
   mongo_server_version = "4.2"
 
-  depends_on           = [ azurerm_resource_group.devsocialaization ]
+  depends_on           = [ azurerm_resource_group.devsocialeye ]
 }
 
 # Create a MongoDB database within the Cosmos account
@@ -112,7 +112,7 @@ resource "azurerm_container_app" "scenario_ui" {
     }
   }
 
-  depends_on           = [ azurerm_resource_group.devsocialaization, azurerm_container_app_environment.container_env ]
+  depends_on           = [ azurerm_resource_group.devsocialeye, azurerm_container_app_environment.container_env ]
 }
 
 resource "azurerm_container_app" "scenario_api" {
@@ -190,7 +190,7 @@ resource "azurerm_container_app" "scenario_api" {
       percentage      = 100
     }
   }
-  depends_on           = [ azurerm_resource_group.devsocialaization, azurerm_container_app_environment.container_env ]
+  depends_on           = [ azurerm_resource_group.devsocialeye, azurerm_container_app_environment.container_env ]
 }
 
 resource "azurerm_container_app" "conversation_api" {
@@ -233,7 +233,7 @@ resource "azurerm_container_app" "conversation_api" {
     }
   }
 
-  depends_on           = [ azurerm_resource_group.devsocialaization, azurerm_container_app_environment.container_env ]
+  depends_on           = [ azurerm_resource_group.devsocialeye, azurerm_container_app_environment.container_env ]
 }
 
 # Output values that will be displayed after deployment
